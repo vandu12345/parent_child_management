@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    container_name: postgres_db
+    environment:
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      cloudify_network:
+
+  redis:
+    image: "redis:latest"
+    container_name: "redis_server"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      cloudify_network:
+
+  # postfix:
+  #   build: .
+  #   container_name: postfix
+  #   hostname: smtp.example.com
+  #   domainname: example.com
+  #   environment:
+  #     - maildomain=example.com
+  #   volumes:
+  #     - ./config/main.cf:/etc/postfix/main.cf
+  #     - ./config/sasl_passwd:/etc/postfix/sasl_passwd
+  #     - maildata:/var/spool/postfix
+  #   ports:
+  #     - "25:25"
+  #   networks:
+  #     cloudify_network:
+  #   restart: unless-stopped
+
+volumes:
+  db_data:
+  redis_data:
+  maildata:
+
+networks:
+  cloudify_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.18.0.0/24
