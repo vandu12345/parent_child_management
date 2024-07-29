@@ -5,3 +5,15 @@ asyncpg==0.29.0
 alembic==1.13.2
 pre-commit==3.7.1
 celery==5.4.0
+python-jose==3.3.0
+urllib3==1.26.5
+typing_extensions==4.11.0
+tzdata==2023.3
+redis==5.0.7
+requests==2.25.1
+PyJWT==2.3.0
+PyMsgBox==1.0.9
+pyOpenSSL==21.0.0
+Jinja2==3.0.3
+bcrypt==3.2.0
+passlib==1.7.4

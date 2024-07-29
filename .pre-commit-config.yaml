@@ -1,3 +1,10 @@
+# uses
+# pip install pre-commit
+# pre-commit install
+# pre-commit run --all-files
+# or during commit it will be automatically verified
+
+
 repos:
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.5.5

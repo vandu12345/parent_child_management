@@ -10,8 +10,8 @@ import CONSTANTS
 
 celery_worker = Celery(
     "worker",
-    broker="redis://localhost:6379/0",
-    backend="redis://localhost:6379/0",
+    broker=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
+    backend=os.getenv("REDIS_URL", "redis://localhost:6379/0"),
 )
 
 celery_worker.conf.update(task_routes={"task.*": {"queue": "email"}})
@@ -54,9 +54,9 @@ def send_activation_email(email: str, token: str):
 
     msg.attach(MIMEText(body, "html"))
     with smtplib.SMTP(
-        os.getenv("EMAIL_HOST", "localhost"), os.getenv("EMAIL_PORT", 25)
+        os.getenv("EMAIL_HOST", "0.0.0.0"), os.getenv("EMAIL_PORT", 25)
     ) as server:
-        server.starttls()
+        # server.starttls()
         server.sendmail(CONSTANTS.FROM_ADMIN_EMAIL, email, msg.as_string())
 
 

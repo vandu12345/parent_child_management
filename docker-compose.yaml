@@ -1,9 +1,9 @@
-version: '3.8'
+version: "3.8"
 
 services:
   db:
     image: postgres
-    container_name: postgres_db
+    container_name: postgres
     environment:
       POSTGRES_PASSWORD: admin
     volumes:
@@ -11,34 +11,63 @@ services:
     ports:
       - "5432:5432"
     networks:
-      cloudify_network:
+      - cloudify_network
 
   redis:
     image: "redis:latest"
-    container_name: "redis_server"
+    container_name: "redis"
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
-      cloudify_network:
+      - cloudify_network
 
-  # postfix:
-  #   build: .
-  #   container_name: postfix
-  #   hostname: smtp.example.com
-  #   domainname: example.com
-  #   environment:
-  #     - maildomain=example.com
-  #   volumes:
-  #     - ./config/main.cf:/etc/postfix/main.cf
-  #     - ./config/sasl_passwd:/etc/postfix/sasl_passwd
-  #     - maildata:/var/spool/postfix
-  #   ports:
-  #     - "25:25"
-  #   networks:
-  #     cloudify_network:
-  #   restart: unless-stopped
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: parent_child_app
+    volumes:
+      - ./profile_photos:/app/profile_photos
+    ports:
+      - "8000:8000"
+    networks:
+      - cloudify_network
+    environment:
+      - PG_HOST=db
+      - PG_USER=postgres
+      - PG_PASS=admin
+      - PG_PORT=5432
+      - PG_DB_NAME=parent_child_management
+      - REDIS_URL=redis://redis_server:6379/0
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: celery_worker
+    command: celery -A CeleryConfig.celery_worker worker --loglevel=info
+    networks:
+      - cloudify_network
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis_server:6379/0
+      - EMAIL_HOST=10.0.2.15 #Email host ip
+      - EMAIL_PORT=25 # Email Port
+
+  rq-dashboard:
+    image: eoranged/rq-dashboard
+    container_name: rq_dashboard
+    ports:
+      - "9181:9181"
+    environment:
+      - RQ_DASHBOARD_REDIS_URL=redis://redis_server:6379/0
+    networks:
+      - cloudify_network
+    depends_on:
+      - redis
 
 volumes:
   db_data:
