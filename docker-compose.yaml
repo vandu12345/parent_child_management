@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_PASSWORD: admin
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - parent_child_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
@@ -70,7 +70,7 @@ services:
       - redis
 
 volumes:
-  db_data:
+  parent_child_data:
   redis_data:
   maildata:
 

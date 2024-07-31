@@ -1,0 +1,16 @@
+# Use the latest Ubuntu image as a base image
+FROM ubuntu:22.04
+
+# Update and install basic utilities
+RUN apt-get update && \
+    apt-get install -y curl wget vim && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /root
+
+# Copy any necessary files (if you have any)
+# COPY <source> <destination>
+
+# Set the default command to run when the container starts
+CMD ["tail", "-f", "/dev/null"]

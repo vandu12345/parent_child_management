@@ -1,0 +1,20 @@
+# Use a lightweight base image
+FROM alpine:latest
+
+# Install required packages
+RUN apk add --no-cache postfix
+
+# Create the Postfix main.cf configuration file
+COPY config/main.cf /etc/postfix/main.cf
+
+# Create the SASL configuration file
+COPY config/sasl_passwd /etc/sasl2/smtpd.conf
+
+# Set the hostname (replace with your desired hostname)
+ENV HOSTNAME mypostfix
+
+# Expose the SMTP port
+EXPOSE 25
+
+# Start Postfix
+CMD ["/usr/sbin/postfix", "start" ]
